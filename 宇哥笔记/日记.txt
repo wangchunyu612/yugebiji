@@ -1,0 +1,878 @@
+201607050930
+编译时报错
+[ERROR] /home/admin/works/tcjfweb/src/main/java/com/longti/jfsc/util/CaptchaUtil.java:[23,32] 程序包com.sun.image.codec.jpeg不存在
+[ERROR] /home/admin/works/tcjfweb/src/main/java/com/longti/jfsc/util/CaptchaUtil.java:[24,32] 程序包com.sun.image.codec.jpeg不存在
+解决办法：<jdk.version>1.8</jdk.version>
+<java.home>D:\Java\jdk1.8.0_45_64</java.home>
+1.2、
+<plugin>
+<groupId>org.apache.maven.plugins</groupId>
+   <artifactId>maven-compiler-plugin</artifactId>
+   <version>3.5.1</version>
+   <configuration>
+   	<source>${jdk.version}</source>
+<target>${jdk.version}</target>
+<encoding>${project.build.sourceEncoding}</encoding>
+<compilerArguments>
+<verbose />
+<bootclasspath>${java.home}\jre\lib\rt.jar;${java.home}\jre\lib\jce.jar</bootclasspath>
+</compilerArguments>
+   </configuration>
+</plugin>
+
+#!/bin/bash
+#mysql backup
+DBNAME="app_mysql"
+BACKPATH="/home/app/backup"
+USER=appvmgr
+PASSWORD=AppversionManage
+if [ ! -d $BACKPATH ];then
+  mkdir -p $BACKPATH
+fi
+/home/apps/mysql/bin/mysqldump -h 221.208.170.175  -u$USER  -p$PASSWORD -B  appverdb  >$BACKPATH/$DBNAME-$(date +%Y%m%d).sql
+cd $BACKPATH
+tar zPcf $DBNAME-$(date +%Y%m%d).sql.tar.gz $DBNAME-$(date +%Y%m%d).sql
+#find $BACKPATH -mtime +2 -name "*.sql.tar.gz" |xargs rm -rf {} 
+rm -rf $BACKPATH/*.sql
+find $BACKPATH -mtime +2 -name "*.sql.tar.gz" |xargs rm -rf {}
+#scp -p 20022  $BACKPATH/$DBNAME-$(date +%Y%m%d).sql.tar.gz root@221.208.171.174:/backup
+更改备份脚本
+测试
+201607060839
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.3:compile (default-compile) on project jfsc_admin: Compilation failure: Compilation failure:
+[ERROR] /home/admin/works/tcjfweb/src/main/java/com/longti/jfsc/controller/RegController.java:[52,28] 找不到符号
+[ERROR] 符号:   类 CaptchaUtil
+[ERROR] 位置: 程序包 com.longti.jfsc.util
+[ERROR] /home/admin/works/tcjfweb/src/main/java/com/longti/jfsc/controller/RegController.java:[2047,46] 找不到符号
+[ERROR] 符号:   变量 CaptchaUtil
+[ERROR] 位置: 类 com.longti.jfsc.controller.RegController
+[ERROR] /home/admin/works/tcjfweb/src/main/java/com/longti/jfsc/controller/RegController.java:[2053,26] 找不到符号
+[ERROR] 符号:   变量 CaptchaUtil
+[ERROR] 位置: 类 com.longti.jfsc.controller.RegController
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+编译报错
+pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>com.tengcai.markstore</groupId>
+        <artifactId>appver</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <packaging>war</packaging>
+        <name>appverapi Maven Webapp</name>
+        <build>
+                <defaultGoal>compile</defaultGoal>
+                <finalName>appVerService</finalName>
+                <pluginManagement>
+                        <plugins>
+                                <plugin>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-war-plugin</artifactId>
+                                        <version>2.1.1</version>
+                                        <configuration>
+                                                <packagingExcludes>WEB-INF/web.xml</packagingExcludes>
+                                        </configuration>
+                                </plugin>
+                                <plugin>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-compiler-plugin</artifactId>
+                                        <version>3.3</version>
+                                        <configuration>
+                                                <source>1.7</source>
+                                                <target>1.7</target>
+                                                <encoding>UTF-8</encoding>
+                                        </configuration>
+                                </plugin>
+                                <plugin>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-resources-plugin</artifactId>
+                                        <version>2.7</version>
+                                        <configuration>
+                                                <encoding>UTF-8</encoding>
+                                        </configuration>
+                                </plugin>
+                                <plugin>
+                                        <groupId>org.mortbay.jetty</groupId>
+                                        <artifactId>jetty-maven-plugin</artifactId>
+                                        <configuration>
+                                                <webApp>
+                                                        <contextPath>/</contextPath>
+                                                </webApp>
+                                                <stopKey>webx</stopKey>
+                                                <stopPort>9999</stopPort>
+                                                <connectors>
+                                                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                                                                <port>8081</port>
+                                                                <maxIdleTime>60000</maxIdleTime>
+                                                        </connector>
+                                                </connectors>
+                                                <requestLog implementation="org.eclipse.jetty.server.NCSARequestLog">
+                                                        <filename>target/access.log</filename>
+                                                        <retainDays>90</retainDays>
+                                                        <append>false</append>
+                                                        <extended>false</extended>
+                                                        <logTimeZone>GMT+8:00</logTimeZone>
+                                                </requestLog>
+                                                <systemProperties>
+                                                        <systemProperty>
+                                                                <name>productionMode</name>
+                                                                <value>${productionMode}</value>
+                                                        </systemProperty>
+                                                </systemProperties>
+                                        </configuration>
+                                </plugin>
+                        </plugins>
+                </pluginManagement>
+                <resources>
+                        <resource>
+                                <directory>src/main/java</directory>
+                                <includes>
+                                        <include>**/*.xml</include>
+                                </includes>
+                        </resource>
+                        <resource>
+                                <directory>src/main/java</directory>
+                                <includes>
+                                        <include>*.properties</include>
+                                </includes>
+                        </resource>
+                </resources>
+        </build>
+        <properties>
+                <spring.version>4.0.6.RELEASE</spring.version>
+                <cxf.version>3.0.0</cxf.version>
+                <spring.security.version>4.0.6.RELEASE</spring.security.version>
+                <jackson.version>2.4.1</jackson.version>
+        </properties>
+
+        <dependencies>
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-core</artifactId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-web</artifactId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-orm</artifactId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-jdbc</artifactId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context-support</artifactId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-test</artifactId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <artifactId>spring-expression</artifactId>
+                        <groupId>org.springframework</groupId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <artifactId>spring-beans</artifactId>
+                        <groupId>org.springframework</groupId>
+                        <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-tx</artifactId>
+                        <version>${spring.version}</version>
+                </dependency>
+
+                <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-webmvc</artifactId>
+                        <version>${spring.version}</version>
+                        <exclusions>
+                                <exclusion>
+                                        <artifactId>spring-context</artifactId>
+                                        <groupId>org.springframework</groupId>
+                                </exclusion>
+                        </exclusions>
+                </dependency>
+                <dependency>
+                        <groupId>org.apache.cxf</groupId>
+                        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+                        <version>${cxf.version}</version>
+                </dependency>
+                <dependency>
+                        <artifactId>cxf-rt-transports-http</artifactId>
+                        <groupId>org.apache.cxf</groupId>
+                        <version>${cxf.version}</version>
+                </dependency>
+                <!-- Jetty is needed if you're are not using the CXFServlet -->
+                <dependency>
+                        <groupId>commons-pool</groupId>
+                        <artifactId>commons-pool</artifactId>
+                        <version>1.6</version>
+                </dependency>
+                <dependency>
+                        <groupId>commons-dbcp</groupId>
+                        <artifactId>commons-dbcp</artifactId>
+                        <version>1.4</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis</artifactId>
+                        <version>3.2.8</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.mybatis</groupId>
+                        <artifactId>mybatis-spring</artifactId>
+                        <version>1.2.2</version>
+                </dependency>
+
+                <dependency>
+                        <groupId>javax.mail</groupId>
+                        <artifactId>mail</artifactId>
+                        <version>1.4.4</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.yuntongxun.sms</groupId>
+                        <artifactId>ccp_rest_sdk_java</artifactId>
+                        <version>2.6r</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.apache.cxf</groupId>
+                        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+                        <version>${cxf.version}</version>
+                </dependency>
+
+                <dependency>
+                        <groupId>org.apache.cxf</groupId>
+                        <artifactId>cxf-rt-transports-http-jetty</artifactId>
+                        <version>${cxf.version}</version>
+                </dependency>
+                <!-- Jackson -->
+                <dependency>
+                        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                        <artifactId>jackson-jaxrs-json-provider</artifactId>
+                        <version>${jackson.version}</version>
+                </dependency>
+                <!-- 
+                <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-nop</artifactId>
+                        <version>1.7.5</version>
+                </dependency>
+                 -->
+                <!-- 导入Mysql数据库链接jar包 -->  
+        <dependency>  
+            <groupId>mysql</groupId>  
+            <artifactId>mysql-connector-java</artifactId>  
+            <version>5.1.30</version>  
+        </dependency>
+        <dependency>
+                        <groupId>com.jd.jos</groupId>
+                        <artifactId>open-api-sdk</artifactId>
+                        <version>2.0</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.tengcai.josapi</groupId>
+                        <artifactId>jduploadinfo</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>1.8.5</version>
+        </dependency>    
+        <dependency>
+                        <groupId>com.tengcai.message.api</groupId>
+                        <artifactId>phoneMessSend</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                </dependency>
+        </dependencies>
+</project>
+201607110714
+gitchekout -- file 回退到上一版本
+
+运动管家项目  app 接口项目代码仓库地址如下：
+ssh://git@222.171.119.77:20022/venuesb2b/sportsmapi.git 
+ show character 显示mysql当前所有字符集的；show character set；show character；show character set
+auto_increment  条件：正整数，primary key，not null 
+创建表
+1.定义一个空表
+2.从其他表中查询出数据。并以之创建一个表
+3，依照其他表结构，创建一个表
+create tbale if not exists name 
+column_definition:
+    data_type [NOT NULL | NULL] [DEFAULT default_value]
+      [AUTO_INCREMENT] [UNIQUE [KEY] | [PRIMARY] KEY]
+      [COMMENT 'string']
+      [COLUMN_FORMAT {FIXED|DYNAMIC|DEFAULT}]
+      [STORAGE {DISK|MEMORY|DEFAULT}]
+      [reference_definition]
+cat /root/.jenkins/secrets/initialAdminPassword
+210607139716
+
+创建数据库 表文件；
+改表名：alter table wang rename to wang1;
+      ：rename table wang to wang1;
+        
+       
+       rename table jj to jjj;
+       修改表的定义 alter table
+       删除表：
+       修改表引擎： alter table j engine=myisam;
+       innodb 支持外键；
+       其他的不支持
+       ；
+       创建索引: create index node on  phone_check(check_code);
+				索引名  表名		字段按名
+       show indexes from  app_ver_ver;	查看表索引，主键	
+       mysql> create index useid on  phone_check(useof);    
+Query OK, 0 rows affected (0.09 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create index time on  phone_check(create_time );
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create index phone  on  phone_check(phone_code);
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+删除索引：
+mysql> drop index phone on phone_check;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+select   查询语句，惊醒简单的查询
+简单查询：select * from tablename where
+select 字段1 字段2 字段3 from tablename；投影
+
+mysql> select id ,useof from phone_check where id >=20 ；选择
+
+多表查询：
+
+嵌套查询
+from 子句：要查询的关系
+where子句：要查询的条件，布尔关系表达式；字符串要加上单引号，数不能加引号；
+and ,or not  多个条件并列执行的，还可以用between 表示在多少之间；
+mysql> select id,check_code ,phone_code from phone_check where check_code>=200000 AND check_code <=300000;
+select id,check_code ,phone_code from phone_check where  not check_code <=300000; 
+mysql> select id ,check_code from phone_check where check_code between 200000 and 300000;
+
+like 
+    % 任意长度任意字符 通配符；
+    _ 任意单个字符
+     in（）列表
+ 对于产生的结果进行排序 order by 字段名； 排序操作；
+select id ,check_code from phone_check where check_code like '%4'order by check_code ;
+mysql> select id ,check_code from phone_check where check_code like '%4'order by id ;
+mysql> select id ,check_code from phone_check where check_code>=900000 order by check_code;
+正常是升序，desc 为降序
+
+mysql> select id ,check_code from phone_check where check_code>=900000 order by check_code desc;
+对于取出的表改名：
+
+mysql> select id as  wangchuynu  from phone_check where check_code>=900000 order by check_code;
+
+mysql> select id wangchuynu  from phone_check where check_code>=900000 order by check_code;   
+对于某个字段取出平均值avg
+mysql> select AVG(phone_code ) from phone_check;
+mysql> select AVG(phone_code ) from phone_check; 
+MIN ()
+MAX ()
+SUM()
+count()
+分组
+ group by 字段名
+多表查询；mysql> select *from app_ver_product , app_ver_user;
+ 的卡尔乘积；
+ 自然乘积：
+mysql> select * from phone_check,app_ver_product  where phone_check.id = app_ver_product.id;
+201607190821
+DISTINC 去重； 去掉重复的字段；
+嵌套查询 
+The ScRegSetValueExW call failed for Type with the following error:  Access is denied. 
+该ScRegSetValueExW调用失败，出现以下错误类型：访问被拒绝。
+可以用下面给出的任一解决方法：
+1、在“我的电脑”上点右键，选“管理”->“设备管理器”。
+2、选择“查看”/“显示隐藏的设备”，在“非即插即用驱动程序”中选择“npkcrypt”，卸载之。
+3、运行“regedit”，可能存在键项：“HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\ npkcrypt”或“HKEY_LOCAL_MACHINE\SYSTEM\ControlSet002\Services\npkcrypt”等，删除之。
+4、如果QQ目录存在：npkcrypt.sys、npkcrypt.vxd、npkcusb.sys 三个文件，删除之。
+5、重启动后即可生效,问题也就解决了。
+
+步骤 1：启动系统配置实用程序
+1)使用具有管理员权限的帐户登录到计算机。
+2)按“windows键+R”，在“运行”中键入msconfig，然后按Enter。 如果系统提示输入管理员密码或进行确认，请键入密码或单击“继续”。
+
+步骤 2：配置“有选择的启动”选项
+1)在“常规”选项卡上，单击“有选择的启动”。
+2)在“有选择的启动”下，单击以清除“加载启动项”复选框。
+3)单击“服务”选项卡，单击以选择“隐藏所有 Microsoft 服务”复选框，然后单击“全部禁用”。
+4)单击“启动”标签卡,点击“打开任务管理器”，然后点击“禁用”并确定。
+5)然后单击“重新启动”。
+
+The following fatal alert was generated: 10. The internal error state is 1203.. 
+生成以下致命警报：10，内部错误状态是1203..
+2.这个错误应该与证书有关，或者是因为你使用错误的协议访问web站点所致。
+
+我也是 2008 R2 datacenter用EXCHANGE 就有这个错误提示
+
+但是没有发现什么 直接的影响。但是 总是 看到这样的错误信息很不爽。。。
+
+
+A timeout (30000 milliseconds) was reached while waiting for a transaction response from the NlaSvc service.
+
+同时等待来自NlaSvc服务事务响应超时（30000毫秒）达到。
+找不到解决办法
+
+服务器被攻击，黑客总是利用工具尝试登录我的windows系统和SQL数据库。 求高手指点，怎样防止这种攻击？
+staysomewhere 12级  分类： 其他  被浏览299次  2013.05.24
+下面是“安全性”日志，每1秒钟都有好几次登录尝试：
+尝试登录的用户: 	MICROSOFT_AUTHENTICATION_PACKAGE_V1_0
+ 登录帐户:  	Administrator
+ 源工作站: 	
+ 错误代码: 	0xC000006A
+
+下面是“应用程序”日志，同样每1秒钟都有好几次登录尝试：
+用户 'sa' 登录失败。 原因: 密码与所提供的登录名不匹配。 [客户端: 124.133.35.22]
+ 
+
+一般的WINDOWS没做安全设置时会被扫描和尝试入侵，需要做如下的安全设置。
+1、修改WINDOWS的远程端口号和FTP端口号。
+2、打开WINDOWS的安全防火墙，只要开80、远程端口和FTP端口号这三个，其他的端口都关了。
+3、修改帐号名和密码，最好增加可以用的字符如“_”。
+4、安装360的防火墙（主要是因为它免费）。
+5、定期看日志如有异常及时找原因，修复安全隐患
+
+************************************************************************************
+#user nobody;
+user  app;
+worker_processes 4;
+
+error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+pid        logs/nginx.pid;
+
+
+events {
+    use epoll;
+    worker_connections  4096;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  logs/access.log  main;
+    add_header X-UA-Compatible 'IE=EmulateIE7';
+    client_header_timeout  3m;  
+    client_body_timeout    3m;  
+    send_timeout           3m;
+    client_header_buffer_size    4096k;  
+    large_client_header_buffers  4 4096k;
+    client_max_body_size 50M;
+    sendfile       on;
+    tcp_nopush     on;
+    tcp_nodelay    on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  180;
+
+    gzip  on;
+    gzip_min_length 512k;
+    gzip_buffers    4 2048k;
+    gzip_http_version 1.0;
+    gzip_comp_level 2;
+    gzip_types text/plain application/x-javascript text/css application/xml;
+    gzip_vary on;
+    gzip_disable "MSIE [1-6]\.";
+
+    upstream tomcat_web {
+        server 192.168.66.101:8081 weight=4;
+        server 192.168.66.102:8081 weight=2;
+       #server 192.168.66.103:8081 weight=3;
+        ip_hash;
+        keepalive 180; 
+    }
+
+    upstream tomcat_api {
+        server 192.168.66.101:8083 weight=2;
+        server 192.168.66.102:8083 weight=2;
+        #server 192.168.66.103:8083 weight=2;
+        ip_hash;
+        keepalive 30;
+    }
+
+    server {
+        listen       80;
+        server_name  localhost hljsporto2o.com www.hljsporto2o.com www.hljsporto2o.cn hljsporto2o.cn;
+
+        charset utf-8;
+
+        access_log  logs/host.access.log  main;
+
+        location / {
+            #root   html;
+            root /home/app/tomcat_vadm/webapps;
+            index  index.html index.htm index.jsp main.jsp;
+            proxy_pass http://tomcat_web;
+        }
+
+        error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        location ~ .*.(jsp|do)$ {
+        #location ~ /(venuesmanage/)|(venueadmin/)|(.*\.jsp)$|(.*\.do)$ {
+            root /home/app/tomcat_vadm/webapps;
+            index index.jsp main.jsp index.html index.htm;
+            proxy_pass http://tomcat_web;
+            proxy_redirect off;
+            proxy_set_header Host $host:$server_port;    #后端的Web服务器可以通过X-Forwarded-For获取用户真实IP
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            client_max_body_size 50m;   #允许客户端请求的最大单文件字节数
+            client_body_buffer_size 18m; #缓冲区代理缓冲用户端请求的最大字节数
+            proxy_connect_timeout 12;   #nginx跟后端服务器连接超时时间(代理连接超时)
+            proxy_read_timeout 30;      #连接成功后，后端服务器响应时间(代理接收超时)
+            proxy_send_timeout 30;
+            proxy_buffer_size 4096k;       #设置代理服务器（nginx）保存用户头信息的缓冲区大小
+            proxy_buffers 4 4096k;        #proxy_buffers缓冲区，网页平均在32k以下的话，这样设置
+            proxy_busy_buffers_size 4096k; #高负荷下缓冲大小（proxy_buffers*2）
+            proxy_temp_file_write_size 4096k; #设定缓存文件夹大小，大于这个值，将从upstream服务器传
+            proxy_next_upstream error timeout invalid_header http_500 http_503 http_404; 
+            proxy_max_temp_file_size 128m;
+        }
+
+        location ~ /(venueService|vorderService|phoneService)/ {
+            proxy_pass http://tomcat_api;
+            proxy_redirect off;
+            proxy_connect_timeout 180; 
+        }
+        #location ~ .*\.(gif|jpg|png|bmp|swf|css|js)$   #由nginx处理静态页面
+        #{
+        #    root /home/app/tomcat_vadm/webapps;
+        #    expires 3d;   #使用expires缓存模块，缓存到客户端30天
+        #}
+        #location ~ .*\.(js|css)$
+        #{
+        #    root /home/app/tomcat_vadm/webapps;
+        #    expires 1d;
+        #}
+
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+} nginx
+*******************************************************
+查看表是怎样创建的：show create table ；
+show create table app_ver_ver;
+201607200807
+
+RDP 协议组件 X.224 在协议流中发现一个错误并且中断了客户端连接。
+
+事件类型: 错误
+
+事件来源: TermDD
+
+描述:
+
+RDP 的 “DATA ENCRYPTION” 协议组件在协议流中检测到一个错误并且中断了客户机。
+
+————————————————————————————————————————————
+
+   这里，RDP，即远程桌面协议。是服务器远程连接无法使用了，后来百度了一下才知道，发生这种状况可能的原因是：
+
+1：有可能你的远程登陆组件出现问题，试试能否能继续远程登陆。
+
+2：有人在攻击你，使用暴力破解的方法登陆你的系统，导致系统拒绝服务。
+
+   如果您是使用机房服务器的，第二种的可能性高一些，也就是你被扫肉鸡的给扫了，现在网络安全是一个世界性的问题，很多机房里面鱼龙混杂，每天都有扫肉鸡的，如果您不注意网络安全，比如用一些简单弱质密码，可能分分钟你服务器就变肉鸡了，有一次一台机器刚刚做系统，用了一个简单的键盘密码，结果不到五分钟机器就被入侵了，哎，只好重新再装一遍，网络安全伤不起啊。
+
+   这个错误导致的后果就是计算机的远程桌面无法登录了，其他都是正常的，唯独远程桌面不能使用，查了一下，原来是注册表中的“Certificate”子键被损坏，才导致用户无法与终端服务进行正常通信。分析：Certificate子键负责终端服务通信中数据信息的认证和加密，它一旦被损坏，终端服务的协议组件就会检测到错误，中断客户机与终端服务器之间的通信。
+
+网上的处理方式也比较简单：
+
+
+打开注册表编辑器（开始——>运行——>输入regedit），找HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/TermService/Parameters键值，将Certificate键值删除，然后直接重新启动服务器即可。服务器在重新启动后会自动创建该键值。
+
+   但是我认为这方法治标不治本啊！人家要是再扫了，不还是会引起这种状况？
+
+   保险点的方法是修改一下服务器远程端口吧，因为一般您租或者托管的服务器，机房做好系统给你都是用的默认的3389的端口或是设置的统一的一个端口，这样很容易被扫，所以保险的方法是修改一下远程连接的端口吧。服务器理论上的端口范围是从0到65535，避免一些常用端口，随机性修改一个端口就行，修改方法请见：http://www.chayetu.net/post/67.html
+********************************************************************************************************
+登录类型2：交互式登录(Interactive)
+
+　　这应该是你最先想到的登录方式吧，所谓交互式登录就是指用户在计算机的控制台上进行的登录，也就是在本地键盘上进行的登录，但不要忘记通过KVM登录仍然属于交互式登录，虽然它是基于网络的。
+
+　　登录类型3：网络(Network)
+
+　　当你从网络的上访问一台计算机时在大多数情况下Windows记为类型3，最常见的情况就是连接到共享文件夹或者共享打印机时。另外大多数情况下通过网络登录IIS时也被记为这种类型，但基本验证方式的IIS登录是个例外，它将被记为类型8，下面将讲述。
+
+　　登录类型4：批处理(Batch)
+
+　　当Windows运行一个计划任务时，“计划任务服务”将为这个任务首先创建一个新的登录会话以便它能在此计划任务所配置的用户账户下运行，当这种登录出现时，Windows在日志中记为类型4，对于其它类型的工作任务系统，依赖于它的设计，也可以在开始工作时产生类型4的登录事件，类型4登录通常表明某计划任务启动，但也可能是一个恶意用户通过计划任务来猜测用户密码，这种尝试将产生一个类型4的登录失败事件，但是这种失败登录也可能是由于计划任务的用户密码没能同步更改造成的，比如用户密码更改了，而忘记了在计划任务中进行更改。
+
+　　登录类型5：服务(Service)
+
+　　与计划任务类似，每种服务都被配置在某个特定的用户账户下运行，当一个服务开始时，Windows首先为这个特定的用户创建一个登录会话，这将被记为类型5，失败的类型5通常表明用户的密码已变而这里没得到更新，当然这也可能是由恶意用户的密码猜测引起的，但是这种可能性比较小，因为创建一个新的服务或编辑一个已存在的服务默认情况下都要求是管理员或serversoperators身份，而这种身份的恶意用户，已经有足够的能力来干他的坏事了，已经用不着费力来猜测服务密码了。
+
+　　登录类型7：解锁(Unlock)
+
+　　你可能希望当一个用户离开他的计算机时相应的工作站自动开始一个密码保护的屏保，当一个用户回来解锁时，Windows就把这种解锁操作认为是一个类型7的登录，失败的类型7登录表明有人输入了错误的密码或者有人在尝试解锁计算机。
+
+　　登录类型8：网络明文(NetworkCleartext)
+
+　　这种登录表明这是一个像类型3一样的网络登录，但是这种登录的密码在网络上是通过明文传输的，WindowsServer服务是不允许通过明文验证连接到共享文件夹或打印机的，据我所知只有当从一个使用Advapi的ASP脚本登录或者一个用户使用基本验证方式登录IIS才会是这种登录类型。“登录过程”栏都将列出Advapi.
+
+　　登录类型9：新凭证(NewCredentials)
+
+　　当你使用带/Netonly参数的RUNAS命令运行一个程序时，RUNAS以本地当前登录用户运行它，但如果这个程序需要连接到网络上的其它计算机时，这时就将以RUNAS命令中指定的用户进行连接，同时Windows将把这种登录记为类型9，如果RUNAS命令没带/Netonly参数，那么这个程序就将以指定的用户运行，但日志中的登录类型是2.
+
+　　登录类型10：远程交互(RemoteInteractive)
+
+　　当你通过终端服务、远程桌面或远程协助访问计算机时，Windows将记为类型10，以便与真正的控制台登录相区别，注意XP之前的版本不支持这种登录类型，比如Windows2000仍然会把终端服务登录记为类型2.
+
+　　登录类型11：缓存交互(CachedInteractive)
+
+　　Windows支持一种称为缓存登录的功能，这种功能对移动用户尤其有利，比如你在自己网络之外以域用户登录而无法登录域控制器时就将使用这种功能，默认情况下，Windows缓存了最近10次交互式域登录的凭证HASH，如果以后当你以一个域用户登录而又没有域控制器可用时，Windows将使用这些HASH来验证你的身份。
+
+　　上面讲了Windows的登录类型，但默认情况下Windows2000是没有记录安全日志的，你必须先启用组策略“计算机配置/Windows设置/安全设置/本地策略/审核策略”下的“审核登录事件”才能看到上面的记录信息。希望这些详细的记录信息有助于大家更好地掌握系统情况，维护网络安定。
+
+
+2016/07/20 18:38:36 [error] 1194#0: *6260 open() "/home/nginx/html/cache/global/img/gs.gif" failed (2: No such file or directory), client: 93.174.93.136, server: localhost, request: "GET http://www.baidu.com/cache/global/img/gs.gif HTTP/1.1", host: "www.baidu.com"
+2016/07/20 18:38:36 [error] 1194#0: *6260 open() "/home/nginx/html/404.html" failed (2: No such file or directory), client: 93.174.93.136, server: localhost, request: "GET http://www.baidu.com/cache/global/img/gs.gif HTTP/1.1", host: "www.baidu.com"
+2016/07/21 04:34:58 [info] 1194#0: *6271 client 59.46.50.178 closed keepalive connection
+2016/07/21 04:34:58 [info] 1194#0: *6273 client 59.46.50.178 closed keepalive connection
+2016/07/21 04:50:11 [error] 1194#0: *6279 open() "/home/nginx/html/cache/global/img/gs.gif" failed (2: No such file or directory), client: 172.82.166.210, server: localhost, request: "GET http://www.baidu.com/cache/global/img/gs.gif HTTP/1.1", host: "www.baidu.com"
+2016/07/21 04:50:11 [error] 1194#0: *6279 open() "/home/nginx/html/404.html" failed (2: No such file or directory), client: 172.82.166.210, server: localhost, request: "GET http://www.baidu.com/cache/global/img/gs.gif HTTP/1.1", host: "www.baidu.com"
+
+
+
+shell
+-n 表示不换行
+撤销变量 unset
+201607220731
+sed 
+	d: 删除符合条件的行
+	p： 显示符合条件的行
+	a \string 在行后添加文字
+	i  \string 在行前添加文字
+	r  在显示内容中添加显示文件 sed '1,$r /etc/issue' /etc/fstab 
+	w   把符合条件的行抽取出来写入另一个文件    sed  -n '/0/w /tmp/0.txt' /etc/fstab 
+	s/patren/string/   把符合条件的内容查找并替换为想要的内容,  只能替换每行中第一次匹配到的内容
+	 若想替换到所有的行，可以加修饰符：s/patren/string/g 表示全局替换 sed 's/\//#/g' /etc/fstab 
+	 i: 表示忽略大小写，
+	 替换中/ 可以用@@ ## 替换过方便书写
+
+
+	df -h |sed 's/^\//@@@@@@@@@/'
+	sed 's/^t/#/' /etc/fstab 
+	sed 's/0$/#/' /etc/fstab 
+	-e 多个条件同时执行
+1. Read的一些选项
+　Read可以带有-a, -d, -e, -n, -p, -r, -t, 和 -s八个选项。
+-a ：将内容读入到数值中
+echo -n "Input muliple values into an array:"
+read -a array
+echo "get ${#array[@]} values in array"
+-d ：表示delimiter，即定界符，一般情况下是以IFS为参数的间隔，但是通过-d，我们可以定义一直读到出现执行的字符位置。例如read –d madfds value，读到有m的字符的时候就不在继续向后读，例如输入为 hello m，有效值为“hello”，请注意m前面的空格等会被删除。这种方式可以输入多个字符串，例如定义“.”作为结符号等等。
+-e ：只用于互相交互的脚本，它将readline用于收集输入行。读到这几句话不太明白什么意思，先跳过。
+-n ：用于限定最多可以有多少字符可以作为有效读入。例如echo –n 4 value1 value2，如果我们试图输入12 34，则只有前面有效的12 3，作为输入，实际上在你输入第4个字符‘3’后，就自动结束输入。这里结果是value为12，value2为3。
+-p ：用于给出提示符，在前面的例子中我们使用了echo –n “…“来给出提示符，可以使用read –p ‘… my promt?’value的方式只需一个语句来表示。
+-r ：在参数输入中，我们可以使用’/’表示没有输入完，换行继续输入，如果我们需要行最后的’/’作为有效的字符，可以通过-r来进行。此外在输入字符中，我们希望/n这类特殊字符生效，也应采用-r选项。
+-s ：对于一些特殊的符号，例如箭头号，不将他们在terminal上打印，例如read –s key，我们按光标，在回车之后，如果我们要求显示，即echo，光标向上，如果不使用-s，在输入的时候，输入处显示^[[A，即在terminal上 打印，之后如果要求echo，光标会上移。
+-t ：用于表示等待输入的时间，单位为秒，等待时间超过，将继续执行后面的脚本，注意不作为null输入，参数将保留原有的值
+JsonParseException: Unrecognized token 'http': was expecting ('true', 'false' or 'null')，
+配置文件报错，修稿配置文件，已解决。
+tomcat 
+#!/bin/bash
+
+if [ -r /usr/share/java-utils/java-functions ]; then
+  . /usr/share/java-utils/java-functions
+else
+  echo "Can't read Java functions library, aborting"
+  exit 1
+fi
+
+# Get the tomcat config (use this for environment specific settings)
+if [ -z "${TOMCAT_CFG}" ]; then
+  TOMCAT_CFG="/etc/tomcat/tomcat.conf"
+fi
+
+if [ -r "$TOMCAT_CFG" ]; then
+  . $TOMCAT_CFG
+fi
+
+# Get instance specific config file
+if [ -r "/etc/sysconfig/${NAME}" ]; then
+    . /etc/sysconfig/${NAME}
+fi
+
+set_javacmd
+cd ${CATALINA_HOME}
+# CLASSPATH munging
+if [ ! -z "$CLASSPATH" ] ; then
+  CLASSPATH="$CLASSPATH":
+fi
+
+if [ -n "$JSSE_HOME" ]; then
+  CLASSPATH="${CLASSPATH}$(build-classpath jcert jnet jsse 2>/dev/null):"
+fi
+CLASSPATH="${CLASSPATH}${CATALINA_HOME}/bin/bootstrap.jar"
+CLASSPATH="${CLASSPATH}:${CATALINA_HOME}/bin/tomcat-juli.jar"
+CLASSPATH="${CLASSPATH}:$(build-classpath commons-daemon 2>/dev/null)"
+
+if [ "$1" = "start" ]; then
+  ${JAVACMD} $JAVA_OPTS $CATALINA_OPTS \
+    -classpath "$CLASSPATH" \
+    -Dcatalina.base="$CATALINA_BASE" \
+    -Dcatalina.home="$CATALINA_HOME" \
+    -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+    -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+    -Djava.util.logging.config.file="${CATALINA_BASE}/conf/logging.properties" \
+    -Djava.util.logging.manager="org.apache.juli.ClassLoaderLogManager" \
+    org.apache.catalina.startup.Bootstrap start \
+    >> ${CATALINA_BASE}/logs/catalina.out 2>&1 &
+    if [ ! -z "$CATALINA_PID" ]; then
+      echo $! > $CATALINA_PID
+    fi
+elif [ "$1" = "start-security" ]; then
+  ${JAVACMD} $JAVA_OPTS $CATALINA_OPTS \
+    -classpath "$CLASSPATH" \
+    -Dcatalina.base="$CATALINA_BASE" \
+    -Dcatalina.home="$CATALINA_HOME" \
+    -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+    -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+    -Djava.security.manager \
+    -Djava.security.policy=="${CATALINA_BASE}/conf/catalina.policy" \
+    -Djava.util.logging.config.file="${CATALINA_BASE}/conf/logging.properties" \
+    -Djava.util.logging.manager="org.apache.juli.ClassLoaderLogManager" \
+    org.apache.catalina.startup.Bootstrap start \
+    >> ${CATALINA_BASE}/logs/catalina.out 2>&1 &
+    if [ ! -z "$CATALINA_PID" ]; then
+      echo $! > $CATALINA_PID
+    fi
+elif [ "$1" = "stop" ]; then
+  ${JAVACMD} $JAVA_OPTS \
+    -classpath "$CLASSPATH" \
+    -Dcatalina.base="$CATALINA_BASE" \
+    -Dcatalina.home="$CATALINA_HOME" \
+    -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" \
+    -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+    org.apache.catalina.startup.Bootstrap stop \
+    >> ${CATALINA_BASE}/logs/catalina.out 2>&1
+elif [ "$1" = "version" ]; then
+  ${JAVACMD} -classpath ${CATALINA_HOME}/lib/catalina.jar \
+    org.apache.catalina.util.ServerInfo
+else
+  echo "Usage: $0 {start|start-security|stop|version}"
+  exit 1
+fi
+201608040754
+
+
+DNS 域名解析服务 Domain name service 名称转换 有查询的
+vi /etc/my.cnf    #编辑文件，找到[mysqld]，在下面添加一行skip-grant-tables
+
+[mysqld]
+
+skip-grant-tables
+
+:wq!  #保存退出
+
+service mysqld restart  #重启MySQL服务
+
+2、进入MySQL控制台
+
+mysql -uroot -p   #直接按回车，这时不需要输入root密码。
+
+3、修改root密码
+
+系统运维  www.osyunwei.com  温馨提醒：qihang01原创内容©版权所有,转载请注明出处及原文链接
+
+update mysql.user set password=password('123456') where User="root" and Host="localhost";
+
+flush privileges;  #刷新系统授权表
+
+grant all on *.* to 'root'@'localhost' identified by '123456' with grant option;
