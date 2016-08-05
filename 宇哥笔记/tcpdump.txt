@@ -1,0 +1,31 @@
+tcpdump安装配置及抓包分析
+
+预装软件：
+[plain] view plain copy print?在CODE上查看代码片派生到我的代码片
+yum -y install flex  
+yum -y install bison  
+yum -y install gcc  
+
+
+下载及安装
+[plain] view plain copy print?在CODE上查看代码片派生到我的代码片
+cd /var/install/  
+wget http://www.tcpdump.org/release/libpcap-1.5.3.tar.gz  
+wget http://www.tcpdump.org/release/tcpdump-4.5.1.tar.gz  
+tar -zxvf libpcap-1.5.3.tar.gz  
+cd libpcap-1.5.3  
+./configure  
+make && make install  
+  
+cd ..  
+tar -zxvf tcpdump-4.5.1.tar.gz  
+cd tcpdump-4.5.1  
+./configure  
+make && make install  
+
+
+安装完毕，下面开始抓包
+
+使用tcpdump抓取HTTP包
+[plain] view plain copy print?在CODE上查看代码片派生到我的代码片
+tcpdump -XvvennSs 0 -i eth0 tcp[20:2]=0x4745 or tcp[20:2]=0x4854 -w /tmp/http  
